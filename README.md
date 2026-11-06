@@ -8,6 +8,37 @@ and assignee, and creates the linked child work items in Azure DevOps. See the
 Built with [Tauri v2](https://tauri.app): a Rust backend talks to Azure DevOps, a plain HTML/CSS/JS
 frontend (no bundler) renders the UI.
 
+## Built with AI
+
+Trio is a showcase of AI-assisted development. **All of the code in this repository was written by AI; none of it was
+written or edited by hand.** It was prototyped and built end to end with AI, from the first idea to the code, tests,
+documentation and visuals. A human stayed in the loop throughout: reviewing and approving the pull requests and
+checking the releases. They did not write any of the code or run the app locally.
+
+- **Model:** [Claude Sonnet 5.5](https://www.anthropic.com/claude) (`claude-sonnet-5-5`) from Anthropic, running
+  through the Claude Code agent harness.
+- **Environment:** T3 Code, the agent workspace the sessions ran in.
+- **Scope:** the Rust backend (Azure DevOps REST client, JSON Patch and WIQL building, HTML sanitising, settings and
+  credential storage), the plain HTML/CSS/JS frontend, the unit tests, the demo data, the
+  [overview](docs/Trio-overview.md), this README and the [social preview image](docs/social-preview) were all
+  written by the AI working directly in the repository, not pasted in from chat.
+- **How it was used:** the AI read the existing code before changing it, and wrote unit tests alongside it
+  (`cargo test`). The [architecture rule](#architecture-rule) below (everything in the Rust backend, a thin frontend)
+  kept those changes consistent as the app grew.
+- **Design tooling:** the UI and the social preview image were shaped with the
+  Impeccable design skill, which guides layout, typography, colour and UX copy and flags design-quality problems as
+  the AI edits.
+- **Requirements:** plans and ideas were stress-tested with the
+  [`grill-me`](https://github.com/mattpocock/skills/tree/main/skills/productivity/grill-me) skill by Matt Pocock,
+  where the AI interviews the person relentlessly until the decisions are pinned down.
+- **Human oversight:** the problem, the refinement workflow it should support and the decisions about how it behaves
+  came from a person, who also reviewed and approved the pull requests and checked the releases. The AI did all of the
+  building.
+
+The aim was to see how far AI can take a real, useful tool, so the repository is meant to be read as an example of
+that, rough edges included (the sprint reordering call, for instance, is documented below as not yet tried against a
+real organisation).
+
 ## Running it
 
 Prerequisites: [Rust](https://rustup.rs), Node.js, and on Windows the MSVC build tools and WebView2.
