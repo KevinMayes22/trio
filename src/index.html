@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Trio</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="main.js" defer></script>
+  </head>
+
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <svg class="logo" viewBox="0 0 32 32" aria-hidden="true">
+          <circle cx="11" cy="12" r="8" class="c1" />
+          <circle cx="21" cy="12" r="8" class="c2" />
+          <circle cx="16" cy="21" r="8" class="c3" />
+        </svg>
+        <span>Trio</span>
+      </div>
+
+      <label class="sprint-picker team-picker">
+        <span>Team</span>
+        <select id="team" disabled></select>
+      </label>
+      <label class="sprint-picker">
+        <span>Sprint</span>
+        <select id="sprint" disabled></select>
+      </label>
+      <span id="sprint-dates" class="muted"></span>
+
+      <div class="spacer"></div>
+
+      <span id="demo-badge" class="badge hidden" title="Showing built-in sample data; nothing is sent to Azure DevOps">Demo data</span>
+      <button id="reload" class="icon-btn" title="Reload (F5)" aria-label="Reload">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5" /></svg>
+      </button>
+      <button id="open-settings" class="icon-btn" title="Settings" aria-label="Settings">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="3" />
+          <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" />
+        </svg>
+      </button>
+    </header>
+
+    <main class="layout">
+      <aside class="sidebar">
+        <div class="search">
+          <input id="filter" type="search" placeholder="Filter stories…" autocomplete="off" spellcheck="false" />
+        </div>
+        <div id="story-list" class="story-list" role="listbox" aria-label="Stories"></div>
+      </aside>
+
+      <section class="detail">
+        <div id="detail-body" class="detail-body"></div>
+        <div id="dock" class="dock" hidden></div>
+      </section>
+    </main>
+
+    <dialog id="settings" class="modal">
+      <form id="settings-form" method="dialog" autocomplete="off">
+        <h2>Connect to Azure DevOps</h2>
+        <p class="muted">Your PAT is kept in the Windows Credential Manager and is never shown here again.</p>
+
+        <label class="field">
+          <span>Organisation</span>
+          <input id="set-org" placeholder="MyOrg  or  https://dev.azure.com/MyOrg" spellcheck="false" />
+        </label>
+        <label class="field">
+          <span>Project</span>
+          <input id="set-project" spellcheck="false" />
+        </label>
+        <label class="field">
+          <span>Personal access token</span>
+          <input id="set-pat" type="password" spellcheck="false" />
+          <small id="set-pat-hint" class="muted">Scopes needed: <b>Work Items → Read &amp; write</b> and <b>Project and Team → Read</b>.</small>
+        </label>
+        <label class="check">
+          <input id="set-demo" type="checkbox" />
+          <span>Use demo data instead (nothing is sent to Azure DevOps)</span>
+        </label>
+
+        <p id="settings-error" class="error hidden"></p>
+
+        <div class="modal-actions">
+          <button type="button" id="forget-pat" class="link-btn hidden">Forget saved PAT</button>
+          <div class="spacer"></div>
+          <button type="button" id="settings-cancel" class="secondary">Cancel</button>
+          <button type="submit" id="settings-save" class="primary">Save &amp; connect</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="comment-dialog" class="modal">
+      <form id="comment-form" method="dialog">
+        <h2 id="comment-title">Comment on story</h2>
+        <p class="muted">Added to the story's Discussion in Azure DevOps, under your name. Use it for questions or requested changes to the ticket.</p>
+        <textarea id="comment-text" rows="8" placeholder="e.g. Can we split the reset email into a separate story? Acceptance criteria 3 is unclear…" spellcheck="true"></textarea>
+        <p id="comment-error" class="error hidden"></p>
+        <div class="modal-actions">
+          <span class="muted">Ctrl+Enter to post</span>
+          <div class="spacer"></div>
+          <button type="button" id="comment-cancel" class="secondary">Close</button>
+          <button type="submit" id="comment-post" class="primary">Post comment</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="lightbox" class="lightbox"></dialog>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>

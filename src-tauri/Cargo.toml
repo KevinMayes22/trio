@@ -1,0 +1,46 @@
+[package]
+name = "trio"
+version = "1.0.0"
+description = "Three Amigos refinement helper for Azure DevOps"
+authors = ["Kevin Mayes"]
+edition = "2024"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+# The `_lib` suffix may seem redundant but it is necessary
+# to make the lib name unique and wouldn't conflict with the bin name.
+# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
+name = "trio_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+url = "2.5.8"
+regex = "1.13.1"
+base64 = "0.23.1"
+ammonia = "4.2.4"
+futures = "0.3.34"
+tokio = { version = "1.54.1", features = ["macros", "rt-multi-thread"] }
+reqwest = { version = "0.13.5", default-features = false, features = ["json", "rustls"] }
+keyring = { version = "3", features = ["windows-native"] }
+chrono = { version = "0.4.45", default-features = false, features = ["clock"] }
+pulldown-cmark = { version = "0.13.6", default-features = false, features = ["html"] }
+
+
+# Read the optimization guideline for more details: https://tauri.app/concept/size/#cargo-configuration
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = 3
+panic = "abort"
+strip = true
+
+[dev-dependencies]
+wiremock = "0.6.5"
